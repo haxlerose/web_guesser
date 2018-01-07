@@ -3,7 +3,12 @@
   <body>
     <p>
       <form>
-        <%= message %><br /><br />
+        <% if end_message %>
+          <%= end_message %><br /><br />
+        <% else %>
+          <%= message %><br /><br />
+        <% end %>
+        <%= "#{@@guess_num + 1} guesses left!" %><br /><br />
         <input type='text' name='guess' />
         <input type='submit' value='Guess!' />
       </form>

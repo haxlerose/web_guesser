@@ -2,32 +2,50 @@ require 'sinatra'
 require 'sinatra/reloader'
 
 number = rand(101)
+@@guess_num = 5
+end_message = nil
 
-def check_guess(guess, n)
-  g = params['guess'].to_i
-  if g > n
-    if g > n + 5
-      message = "#{g} is way too high!"
+def check_guess(guess, number)
+  if guess == number
+    message = "#{guess} is CORRECT!!  The random number is #{number}. Try again!"
+  elsif guess > number
+    if guess > number + 5
+      message = "#{guess} is way too high!"
     else
-      message = "#{g} is too high!"
+      message = "#{guess} is too high!"
     end
-  elsif g == n
-    message = "#{g} is CORRECT!!  The random number is #{n}."
-  elsif g < n
-    if g < n - 5
-      message = "#{g} is way too low!"
+  elsif guess < number
+    if guess < number - 5
+      message = "#{guess} is way too low!"
     else
-      message = "#{g} is too low!"
+      message = "#{guess} is too low!"
     end
   end
-  # message = "#{g} is CORRECT!!  The random number is #{n}." if g == n
-  # message = "#{g} is #{g > n + 5  ? 'way' : nil} too high!" if g > n
-  # message = "#{g} is #{g < n - 5  ? 'way' : nil} too low!" if g < n
 end
 
 
 get '/' do
-  guess = params["guess"]
-  message = check_guess(guess, number)
-  erb :index, :locals => {:number => number, :message => message}
+  guess = params["guess"].to_i
+  if guess != nil && guess >= 1 && guess <= 100
+    message = check_guess(guess, number)
+  else
+    message = "Guess an integer between 1 and 100"
+  end
+
+  if @@guess_num == 0 && number != params['guess'].to_i
+    end_message = "Out of guesses!  Guess an integer between 1 and 100"
+    number = rand(101)
+    @@guess_num = 5
+  else
+    end_message = nil
+  end
+
+  if number == params['guess'].to_i
+    number = rand(101)
+    @@guess_num = 5
+  end
+
+  @@guess_num -= 1
+
+  erb :index, :locals => {:number => number, :message => message, :end_message => end_message}
 end
